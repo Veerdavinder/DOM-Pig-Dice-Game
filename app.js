@@ -9,8 +9,9 @@ GAME RULES:
 
 */
 var scores, roundScore,activePlayer,gamePlaying;
-init();
 
+init();
+var lastDice;
 document.querySelector('.btn-roll').addEventListener('click',function(){
     if(gamePlaying){
     //1. Random Number
@@ -22,7 +23,13 @@ document.querySelector('.btn-roll').addEventListener('click',function(){
     diceDOM.src='dice-'+dice+'.png';
 
     //3. Update the round score only if rolled number was not 1
-    if(dice !== 1){
+    if(dice === 6 && lastDice === 6 ){
+        //Player looses score
+        scores[activePlayer] = 0 ;
+        document.querySelector('#score-'+activePlayer).textContent='0';
+        nextPlayer();
+    }
+    else if(dice !== 1){
         //Add Score
         roundScore += dice;
         document.querySelector('#current-'+activePlayer).textContent=roundScore;
@@ -30,6 +37,7 @@ document.querySelector('.btn-roll').addEventListener('click',function(){
     else{
         nextPlayer();
     }
+    lastDice = dice;
     }
 
 });
@@ -41,9 +49,19 @@ document.querySelector('.btn-hold').addEventListener('click',function(){
     
     //Update UI
     document.querySelector('#score-'+activePlayer).textContent=scores[activePlayer];
-    //Check if player won the game
 
-    if(scores[activePlayer] >=100){
+    var input = document.querySelector('.final-score').value;
+    var winningScore
+    //Undefined, 0, null or "" are considered to be false
+    if(input){
+        winningScore = input;
+    }
+    else{
+        winningScore=100;
+    }
+    //Check if player won the game
+    
+    if(scores[activePlayer] >=winningScore){
         document.querySelector('#name-'+activePlayer).textContent='Winner!';
         document.querySelector('.dice').style.display='none';
         document.querySelector('.player-'+activePlayer+'-panel').classList.add('winner');
@@ -91,3 +109,8 @@ document.querySelector('.player-0-panel').classList.add('active');
 document.querySelector('.player-1-panel').classList.remove('active');
 
 }
+
+//2. Add an input field to the HTML where players can 
+// set the winning score, so that they can change the predefined score of 100.
+// (Hint: you can read that value with the .value property in JavaScript. 
+//This is a good oportunity to use google to figure this out :)
